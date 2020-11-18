@@ -8,7 +8,7 @@ const modem = new Modem('/dev/ttyUSB0');
 (async () => {
     await modem.connect();
 
-    log.info('Requesting manufacturer....');
+    log.info('Requesting device information....');
 
     const deviceInfo = await modem.getDeviceInformation();
 
