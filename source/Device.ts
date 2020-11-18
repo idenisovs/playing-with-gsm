@@ -74,10 +74,16 @@ export default class Device {
 
                 const lastEntry = accumulator[accumulator.length - 1];
 
-                if (lastEntry === 'OK') {
+                if (lastEntry === 'OK' || lastEntry.indexOf('ERROR') > -1) {
                     accumulator.pop();
                     this.port.removeAllListeners('data');
-                    resolve(accumulator.join(' '));
+
+                    if (lastEntry === 'OK') {
+                        resolve(accumulator.join(' '));
+                    } else {
+                        log.error(lastEntry);
+                        reject(lastEntry);
+                    }
                 }
             });
 
