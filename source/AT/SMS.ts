@@ -1,4 +1,4 @@
-import { SmsMode } from './SmsMode';
+import { Encoding, SmsMode } from '../Configuration';
 
 export default class SMS {
     get RequestTextModeParams() {
@@ -22,6 +22,10 @@ export default class SMS {
     }
 
     get SetGsmEncoding() {
-        return 'AT+CSCS="GSM"';
+        return `AT+CSCS="${Encoding.GSM}"`;
+    }
+
+    get SetUcsEncoding() {
+        return `AT+CSCS="${Encoding.UCS2}"`;
     }
 }

@@ -15,8 +15,6 @@ const modem = new Modem('/dev/ttyUSB0');
 
         log.info(deviceInfo);
 
-        await modem.setGsmEncoding();
-        await modem.setTextMode();
         await modem.sendSms('26745606', 'hello world');
     } catch (error) {
         log.error(error);
