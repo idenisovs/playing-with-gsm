@@ -1,5 +1,7 @@
 import SerialPort from 'serialport';
 import log4js from './log4js';
+import AT from './AT';
+import DeviceInformation from './DeviceInformation';
 
 const log = log4js.getLogger('modem')
 
@@ -49,5 +51,63 @@ export default class Modem {
                 }
             }));
         });
+    }
+
+    run(command: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            if (!this.port.isOpen) {
+                return reject(`Device ${this.path} is not connected!`);
+            }
+
+            log.debug('Running command %s...', command);
+
+            const accumulator: string[] = [];
+
+            this.port.on('data', (response: Buffer) => {
+                const raw = response.toString();
+
+                log.trace([raw]);
+
+                raw.split(/[\r\n]/).forEach((entry: string) => {
+                    if (entry && entry.trim().length > 0) {
+                        accumulator.push(entry);
+                    }
+                });
+
+                const lastEntry = accumulator[accumulator.length - 1];
+
+                if (lastEntry === 'OK') {
+                    accumulator.pop();
+                    this.port.removeAllListeners('data');
+                    resolve(accumulator.join(' '));
+                }
+            });
+
+            this.port.write(`${command}\r\n`, ((error) => {
+                if (error) {
+                    log.error(error);
+                    this.port.removeAllListeners('data');
+                    reject(error);
+                }
+            }));
+        });
+    }
+
+    async getDeviceInformation(): Promise<DeviceInformation> {
+        const result: DeviceInformation = {
+            manufacturer: 'n/a',
+            model: 'n/a',
+            revision: 'n/a',
+            serial: 'n/a'
+        };
+
+        log.debug('Requesting manufacturer...');
+
+        result.manufacturer = await this.run(AT.General.ManufacturerInformation);
+        result.model = await this.run(AT.General.ModelIdentification);
+        result.revision = await this.run(AT.General.RevisionIdentification);
+        result.serial = await this.run(AT.General.DeviceSerialNumber);
+
+        return result;
     }
 }
