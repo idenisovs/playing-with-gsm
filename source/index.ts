@@ -14,13 +14,10 @@ const modem = new Modem('/dev/ttyUSB0');
         const deviceInfo = await modem.getDeviceInformation();
 
         log.info(deviceInfo);
-
-        await modem.sendSms('26745606', 'hello world');
     } catch (error) {
         log.error(error);
     } finally {
         await modem.disconnect();
     }
-
 })();
 
