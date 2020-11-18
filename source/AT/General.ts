@@ -1,4 +1,4 @@
-class General {
+export default class General {
     get ManufacturerInformation() {
         return 'AT+CGMI';
     }
@@ -14,8 +14,4 @@ class General {
     get DeviceSerialNumber() {
         return 'AT+CGSN';
     }
-}
-
-export default class AT {
-    static General = new General();
 }
