@@ -1,7 +1,7 @@
 import SerialPort from 'serialport';
 import log4js from './log4js';
 
-const log = log4js.getLogger('modem')
+const log = log4js.getLogger('device')
 
 export default class Device {
     protected readonly path: string;
@@ -68,17 +68,17 @@ export default class Device {
 
                 raw.split(/[\r\n]/).forEach((entry: string) => {
                     if (entry && entry.trim().length > 0) {
-                        accumulator.push(entry);
+                        accumulator.push(entry.trim());
                     }
                 });
 
                 const lastEntry = accumulator[accumulator.length - 1];
 
-                if (lastEntry === 'OK' || lastEntry.indexOf('ERROR') > -1) {
-                    accumulator.pop();
+                if (lastEntry === 'OK' || (lastEntry && lastEntry.indexOf('ERROR') > -1) || lastEntry === '>') {
                     this.port.removeAllListeners('data');
 
-                    if (lastEntry === 'OK') {
+                    if (lastEntry === 'OK' || lastEntry === '>') {
+                        accumulator.pop();
                         resolve(accumulator.join(' '));
                     } else {
                         log.error(lastEntry);
