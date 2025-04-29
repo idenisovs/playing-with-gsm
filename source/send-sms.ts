@@ -1,12 +1,9 @@
-import { ReadlineParser, SerialPort } from 'serialport';
-import Readline from '@serialport/parser-readline';
+import { SerialPort } from 'serialport';
 
 const port = new SerialPort({
     path: '/dev/ttyUSB0',
     baudRate: 115200
 });
-
-const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
