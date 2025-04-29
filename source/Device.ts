@@ -53,7 +53,7 @@ export default class Device {
         });
     }
 
-    run<T extends string | string[] = string>(command: string, lines = false): Promise<T> {
+    run(command: string): Promise<string> {
         return new Promise((resolve, reject) => {
             if (!this.port.isOpen) {
                 return reject(`Device ${this.path} is not connected!`);
@@ -81,11 +81,7 @@ export default class Device {
 
                     if (lastEntry === 'OK' || lastEntry === '>') {
                         accumulator.pop();
-                        if (lines) {
-                            resolve(accumulator as T);
-                        } else {
-                            resolve(accumulator.join(' ') as T);
-                        }
+                        resolve(accumulator.join(','));
                     } else {
                         log.error(lastEntry);
                         reject(lastEntry);

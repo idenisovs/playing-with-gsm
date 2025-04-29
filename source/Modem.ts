@@ -65,8 +65,8 @@ export default class Modem extends Device {
 
         for (let idx = 0; idx < memory.inbox.received; idx++) {
             const command = format(AT.Sms.ReadSMS, idx);
-            const [header, body] = await this.run<string[]>(command, true);
-            result.push(new SMS(header, body));
+            const raw = await this.run(command);
+            result.push(new SMS(raw));
         }
 
         return result;

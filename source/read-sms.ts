@@ -1,9 +1,13 @@
 import Modem from './Modem';
 import log4js from './log4js';
+import { Encoding, SmsMode } from './DTO';
 
 const log = log4js.getLogger('run');
 
-const modem = new Modem('/dev/ttyUSB0');
+const modem = new Modem('/dev/ttyUSB0', {
+    mode: SmsMode.Text,
+    encoding: Encoding.UCS2
+});
 
 (async () => {
     try {

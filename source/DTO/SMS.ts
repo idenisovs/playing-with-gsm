@@ -7,10 +7,10 @@ export class SMS {
     date: string;
     message: string;
 
-    constructor(header: string, body: string) {
-        this.raw = `${header}\r\n${body}`;
+    constructor(raw: string) {
+        this.raw = raw;
 
-        const [ status, phone, unavailable, date ] = this.decodeHeader(header);
+        const [ status, phone, _, date, body ] = this.decodeHeader(raw);
 
         this.status = status;
         this.phone = phone;
