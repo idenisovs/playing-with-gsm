@@ -5,27 +5,27 @@ export enum MemoryType {
 
 export class MemorySlot {
     memory = MemoryType.SIM;
-    used = 0;
-    available = 0;
+    received = 0;
+    capacity = 0;
 
     constructor(props?: string[]) {
         if (!props) {
             return;
         }
 
-        const [memory, used, available] = props;
+        const [memory, received, capacity] = props;
 
         this.memory = memory === '"SM"' ? MemoryType.SIM : MemoryType.Device;
-        this.used = Number(used);
-        this.available = Number(available);
+        this.received = Number(received);
+        this.capacity = Number(capacity);
     }
 }
 
 export class DeviceMemoryStatus {
     raw: string;
 
-    received = new MemorySlot();
-    sent = new MemorySlot();
+    inbox = new MemorySlot();
+    outbox = new MemorySlot();
     status = new MemorySlot();
 
     constructor(raw: string) {
@@ -45,8 +45,8 @@ export class DeviceMemoryStatus {
 
         const parts: string[] = trimmed.split(',');
 
-        this.received = new MemorySlot(parts.slice(0, 3));
-        this.sent = new MemorySlot(parts.slice(3, 6));
+        this.inbox = new MemorySlot(parts.slice(0, 3));
+        this.outbox = new MemorySlot(parts.slice(3, 6));
         this.status = new MemorySlot(parts.slice(6, 9));
     }
 }
