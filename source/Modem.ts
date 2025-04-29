@@ -6,6 +6,7 @@ import DeviceInformation from './DeviceInformation';
 import Device from './Device';
 import { Configuration, defaultConfig, Encoding, SmsMode } from './Configuration';
 import { DeviceMemoryStatus } from './DeviceMemoryStatus';
+import { SMS } from './DTO';
 
 const log = log4js.getLogger('modem')
 
@@ -58,12 +59,22 @@ export default class Modem extends Device {
     }
 
     async readAllSms() {
-        const memoryStatus = await this.readMemoryStatus();
-        log.trace(memoryStatus);
-        // const response = await this.run(AT.Sms.GetAllMessages);
+        const memory = await this.readMemoryStatus();
+
+        log.trace(memory);
+
+        const result: SMS[] = [];
+
+        for (let idx = 0; idx < memory.inbox.received; idx++) {
+            const command = format(AT.Sms.ReadMessage, idx);
+            const [header, body] = await this.run<string[]>(command, true);
+            result.push(new SMS(header, body));
+        }
+
+        return result;
     }
 
-    async readMemoryStatus() {
+    async readMemoryStatus(): Promise<DeviceMemoryStatus> {
         const response = await this.run(AT.Sms.CheckMemoryStatus);
         log.trace(response);
         return new DeviceMemoryStatus(response);

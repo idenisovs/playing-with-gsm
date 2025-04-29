@@ -33,6 +33,10 @@ export default class SMS {
         return 'AT+CMGL="ALL"';
     }
 
+    get ReadMessage() {
+        return `AT+CMGR=%d`;
+    }
+
     get CheckMemoryStatus() {
         return 'AT+CPMS?';
     }
