@@ -3,8 +3,12 @@ export default class SMS {
         return `AT+CMGS="%s"`
     }
 
-    get GetAllSMS() {
+    get GetAllInGSM() {
         return 'AT+CMGL="ALL"';
+    }
+
+    get GetAllInPDU() {
+        return 'AT+CMGL=4'
     }
 
     get ReadSMS() {
