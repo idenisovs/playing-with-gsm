@@ -1,40 +1,52 @@
 import { Deliver, parse } from 'node-pdu';
 
 export class MultipartMessage {
+    private static counter = 0;
+
     raw: string;
 
-    id: number;
-    status: string;
-    size: number;
+    id = ++MultipartMessage.counter;
+    status = 'empty';
+    size = 0;
 
     ref = 0;
     seq = 0;
-    parts = 0;
+    parts = 1;
 
-    phone: string | null = null;
+    phone = '';
     date = '';
     message = '';
 
-    constructor(raw: string, idx = 1) {
+    constructor(raw: string) {
         this.raw = raw;
 
+        const parts = this.getMessageParts(raw);
+
+        this.decodeMeta(parts);
+
+        const pdu = parse(parts[4]) as Deliver;
+
+        this.decodeHeader(pdu);
+        this.decodeMessage(pdu);
+    }
+
+    private getMessageParts(raw: string) {
         const trimmed = raw.replace('+CMGR: ', '');
         const parts = trimmed.split(',');
 
         if (parts.length === 4) {
-            parts.unshift(String(idx));
+            parts.unshift(String(this.id));
         }
 
-        const [ id, status, _, size, body ] = parts;
+        return parts;
+    }
+
+    private decodeMeta(parts: string[]) {
+        const [ id, status, _, size ] = parts;
 
         this.id = Number(id);
         this.status = status === '1' ? 'read' : 'unread';
         this.size = Number(size);
-
-        const pdu = parse(body) as Deliver;
-
-        this.decodeHeader(pdu);
-        this.decodeMessage(pdu);
     }
 
     private decodeHeader(pdu: Deliver) {
@@ -57,7 +69,7 @@ export class MultipartMessage {
 
     private decodeMessage(pdu: Deliver) {
         this.date = pdu.serviceCenterTimeStamp.getIsoString();
-        this.phone = pdu.address.phone;
+        this.phone = pdu.address.phone || '';
         this.message = pdu.data.getText();
     }
 }

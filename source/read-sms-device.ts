@@ -1,10 +1,9 @@
 import { format } from 'node:util';
-import { Deliver, parse } from 'node-pdu';
 
 import log4js from './log4js';
 import Device from './Device';
 import AT from './AT';
-import { DeviceMemoryStatus, MultipartMessage } from './DTO';
+import { DeviceMemoryStatus, MultipartMessage, SMS } from './DTO';
 
 const log = log4js.getLogger('run');
 
@@ -25,37 +24,34 @@ const device = new Device('/dev/ttyUSB0');
 
         log.trace(memory);
 
-        const sequences = new Map<string, string[]>();
-
-        const messages: MultipartMessage[] = [];
+        const multipartMessages: MultipartMessage[] = [];
 
         for (let idx = 0; idx < memory.inbox.received; idx++) {
             const raw = await device.run(format(AT.Sms.ReadSMS, idx));
-            messages.push(new MultipartMessage(raw, idx + 1));
+            multipartMessages.push(new MultipartMessage(raw));
         }
 
-        log.trace(messages);
+        const sms: SMS[] = [];
+        const messageGroups: Record<number, MultipartMessage[]> = {};
 
-        // const [header, body] = await device.run(format(AT.Sms.ReadSMS, 0), true);
-        // const sms = new SMS(header, body);
-        // // log.trace(sms);
-        //
-        // const parsed = parse(body) as Deliver;
-        //
-        // log.trace(parsed.address.phone);
-        // log.trace(parsed.data.getText());
-        // log.trace(parsed.serviceCenterTimeStamp.getIsoString());
-        //
-        // const udh = parsed.getParts()[0].header
-        //
-        // if (udh) {
-        //     log.trace(udh.toJSON());
-        // }
+        for (let part of multipartMessages) {
+            if (!part.ref) {
+                sms.push(SMS.fromMultipartMessages([part]))
+                continue;
+            }
 
+            if (!messageGroups[part.ref]) {
+                messageGroups[part.ref] = [];
+            }
 
+            messageGroups[part.ref][part.seq-1] = part;
+        }
 
-        // const raw = await device.run(AT.Sms.GetAllPDUSMS, true);
-        // log.trace(raw);
+        for (let group in messageGroups) {
+            sms.push(SMS.fromMultipartMessages(messageGroups[group]));
+        }
+
+        log.trace(sms)
     } catch (error) {
         log.error(error);
     } finally {
