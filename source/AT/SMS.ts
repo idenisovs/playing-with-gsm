@@ -1,4 +1,4 @@
-import { Encoding, SmsMode } from '../Configuration';
+import { Encoding, SmsMode } from '../DTO';
 
 export default class SMS {
     get RequestTextModeParams() {

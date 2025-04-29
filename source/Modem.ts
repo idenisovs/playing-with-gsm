@@ -1,12 +1,10 @@
 import { format } from 'util';
 
 import log4js from './log4js';
+
+import { Configuration, defaultConfig, Encoding, SmsMode, DeviceMemoryStatus, DeviceInformation, SMS } from './DTO';
 import AT from './AT';
-import DeviceInformation from './DeviceInformation';
 import Device from './Device';
-import { Configuration, defaultConfig, Encoding, SmsMode } from './Configuration';
-import { DeviceMemoryStatus } from './DeviceMemoryStatus';
-import { SMS } from './DTO';
 
 const log = log4js.getLogger('modem')
 
