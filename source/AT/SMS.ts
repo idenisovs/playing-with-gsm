@@ -28,4 +28,12 @@ export default class SMS {
     get SetUcsEncoding() {
         return `AT+CSCS="${Encoding.UCS2}"`;
     }
+
+    get GetAllMessages() {
+        return 'AT+CMGL="ALL"';
+    }
+
+    get CheckMemoryStatus() {
+        return 'AT+CPMS?';
+    }
 }

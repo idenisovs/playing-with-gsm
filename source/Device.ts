@@ -11,7 +11,7 @@ export default class Device {
         this.path = path;
         this.port = new SerialPort({
             path: this.path,
-            baudRate: 115200,
+            baudRate: 9600,
             autoOpen: false
         });
     }

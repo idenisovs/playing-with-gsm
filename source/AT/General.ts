@@ -14,4 +14,8 @@ export default class General {
     get DeviceSerialNumber() {
         return 'AT+CGSN';
     }
+
+    get SetSmsStorageOnSIM() {
+        return 'AT+CPMS="SM","SM","SM"';
+    }
 }

@@ -5,6 +5,7 @@ import AT from './AT';
 import DeviceInformation from './DeviceInformation';
 import Device from './Device';
 import { Configuration, defaultConfig, Encoding, SmsMode } from './Configuration';
+import { DeviceMemoryStatus } from './DeviceMemoryStatus';
 
 const log = log4js.getLogger('modem')
 
@@ -56,9 +57,29 @@ export default class Modem extends Device {
         await this.run(`${message}${String.fromCharCode(26)}`)
     }
 
+    async readAllSms() {
+        const memoryStatus = await this.readMemoryStatus();
+        log.trace(memoryStatus);
+        // const response = await this.run(AT.Sms.GetAllMessages);
+    }
+
+    async readMemoryStatus() {
+        const response = await this.run(AT.Sms.CheckMemoryStatus);
+        log.trace(response);
+        return new DeviceMemoryStatus(response);
+    }
+
     private async setup() {
+        await this.setupStorage();
         await this.setupEncoding();
         await this.setupSmsMode();
+    }
+
+    private async setupStorage() {
+        log.debug('Setup modem storage!');
+        log.debug('I will use SIM by default!');
+
+        await this.run(AT.General.SetSmsStorageOnSIM);
     }
 
     private async setupEncoding() {

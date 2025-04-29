@@ -8,17 +8,8 @@ const modem = new Modem('/dev/ttyUSB0');
 (async () => {
     try {
         await modem.connect();
-
-        // log.info('Requesting device information....');
-
-        // const deviceInfo = await modem.getDeviceInformation();
-
-        // log.info(deviceInfo);
-
         const sms = await modem.readAllSms();
-
-        log.info(sms);
-
+        log.trace(sms);
     } catch (error) {
         log.error(error);
     } finally {
