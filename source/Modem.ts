@@ -44,7 +44,7 @@ export default class Modem extends Device {
     async getSmsModeParams(): Promise<string> {
         log.debug('Requesting device text mode params...');
 
-        return await this.run(AT.Sms.RequestTextModeParams);
+        return await this.run(AT.Config.RequestTextModeParams);
     }
 
     async sendSms(to: string, message: string) {
@@ -64,7 +64,7 @@ export default class Modem extends Device {
         const result: SMS[] = [];
 
         for (let idx = 0; idx < memory.inbox.received; idx++) {
-            const command = format(AT.Sms.ReadMessage, idx);
+            const command = format(AT.Sms.ReadSMS, idx);
             const [header, body] = await this.run<string[]>(command, true);
             result.push(new SMS(header, body));
         }
@@ -96,10 +96,10 @@ export default class Modem extends Device {
 
         switch (this.config.encoding) {
             case Encoding.GSM:
-                await this.run(AT.Sms.SetGsmEncoding);
+                await this.run(AT.Config.SetGsmEncoding);
                 break;
             case Encoding.UCS2:
-                await this.run(AT.Sms.SetUcsEncoding);
+                await this.run(AT.Config.SetUcsEncoding);
                 break;
             default:
                 log.warn('Unknown encoding!');
@@ -111,10 +111,10 @@ export default class Modem extends Device {
 
         switch (this.config.mode) {
             case SmsMode.Text:
-                await this.run(AT.Sms.SetTextMode)
+                await this.run(AT.Config.SetTextMode)
                 break;
             case SmsMode.PDU:
-                await this.run(AT.Sms.SetPduMode);
+                await this.run(AT.Config.SetPduMode);
                 break;
             default:
                 log.warn('Unknown SMS mode!');
