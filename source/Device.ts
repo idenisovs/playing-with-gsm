@@ -1,4 +1,4 @@
-import SerialPort from 'serialport';
+import { SerialPort } from 'serialport';
 import log4js from './log4js';
 
 const log = log4js.getLogger('device')
@@ -9,7 +9,9 @@ export default class Device {
 
     constructor(path: string) {
         this.path = path;
-        this.port = new SerialPort(this.path, {
+        this.port = new SerialPort({
+            path: this.path,
+            baudRate: 115200,
             autoOpen: false
         });
     }
@@ -18,7 +20,7 @@ export default class Device {
         log.debug('Connecting to %s...', this.path);
 
         return new Promise((resolve, reject) => {
-            this.port.open(error => {
+            this.port.open((error: any) => {
                 if (error) {
                     log.error(error);
                     return reject(error);
@@ -39,7 +41,7 @@ export default class Device {
                 return resolve();
             }
 
-            this.port.close((error => {
+            this.port.close(((error: any) => {
                 if (error) {
                     log.error(error);
                     reject(error);
@@ -87,7 +89,7 @@ export default class Device {
                 }
             });
 
-            this.port.write(`${command}\r\n`, ((error) => {
+            this.port.write(`${command}\r\n`, ((error: any) => {
                 if (error) {
                     log.error(error);
                     this.port.removeAllListeners('data');

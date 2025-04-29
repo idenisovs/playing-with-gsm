@@ -1,4 +1,5 @@
 import { format } from 'util';
+
 import log4js from './log4js';
 import AT from './AT';
 import DeviceInformation from './DeviceInformation';
