@@ -20,4 +20,4 @@ The AT command stored within the directory `AT`. They will be appended later, an
 
 ## Hardware
 
-Tested with `Huawei E1750` 3G modem. 
+Tested with `Huawei E1750` 3G modem.
